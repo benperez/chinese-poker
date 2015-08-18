@@ -3,7 +3,7 @@ import Data.List (groupBy, sort)
 data Suit = Diamonds
           | Clubs
           | Hearts
-          | Spades deriving (Eq, Enum, Show)
+          | Spades deriving (Eq, Show)
 
 data Rank = Two
           | Three
@@ -40,12 +40,22 @@ instance Ord Card where
 
 data Hand = Hand Card Card Card Card Card deriving (Eq, Show)
 
---TODO - this is where hand comparison logic goes
 instance Ord Hand where
-  (Hand a _ _ _ _) `compare` (Hand b _ _ _ _) = a `compare` b
+  a@(Hand a1 a2 a3 a4 a5) `compare` b@(Hand b1 b2 b3 b4 b5)
+    | handTypeA /= handTypeB = handTypeA `compare` handTypeB
+    | otherwise              = sortedHandlistA `compare` sortedHandlistB
+    where
+      handTypeA = case extractFiveCardHandType a of
+        (Just fiveCardHandTypeA) -> max fiveCardHandTypeA (extractFreqHandType a)
+        _                        -> extractFreqHandType a
+      handTypeB = case extractFiveCardHandType b of
+        (Just fiveCardHandTypeB) -> max fiveCardHandTypeB (extractFreqHandType b)
+        _                        -> extractFreqHandType b
+      sortedHandlistA = sort [a1, a2, a3, a4, a5]
+      sortedHandlistB = sort [b1, b2, b3, b4, b5]
 
-extractFrequencyHandType :: Hand -> HandType
-extractFrequencyHandType (Hand c1 c2 c3 c4 c5) = case rankFreqs of
+extractFreqHandType :: Hand -> HandType
+extractFreqHandType (Hand c1 c2 c3 c4 c5) = case rankFreqs of
   [4, 1]       -> Quads
   [3, 2]       -> FullHouse
   [3, 1, 1]    -> Trips
