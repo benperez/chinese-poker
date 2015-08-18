@@ -1,5 +1,4 @@
 import Data.List (groupBy, sort)
---import Data.Enum  (succ)
 
 data Suit = Diamonds
           | Clubs
@@ -32,10 +31,12 @@ data HandType = HighCard
               | StraightFlush
               deriving (Eq, Ord, Enum, Show)
 
-data Card = Card Rank Suit deriving (Eq, Show)
+data Card = Card { rank :: Rank
+                 , suit :: Suit
+                 } deriving (Eq, Show)
 
 instance Ord Card where
-  (Card rank1 _) `compare` (Card rank2 _) = rank1 `compare` rank2
+  card1 `compare` card2 = (rank card1) `compare` (rank card2)
 
 data Hand = Hand Card Card Card Card Card deriving (Eq, Show)
 
@@ -52,7 +53,7 @@ extractFrequencyHandType (Hand c1 c2 c3 c4 c5) = case rankFreqs of
   [2, 1, 1, 1] -> Pair
   _            -> HighCard
   where
-    ranksEqual (Card rank1 _) (Card rank2 _) = rank1 == rank2
+    ranksEqual card1 card2 = (rank card1) == (rank card2)
     rankFreqs = map length . groupBy ranksEqual . sort $ [c1, c2, c3, c4, c5]
 
 extractFiveCardHandType :: Hand -> Maybe HandType
@@ -63,7 +64,7 @@ extractFiveCardHandType (Hand c1 c2 c3 c4 c5) = case (isStraight, isFlush) of
   (False, False) -> Nothing
   where
     cardList = [c1, c2, c3, c4, c5]
-    rankList = map (\(Card rank _) -> rank) cardList
-    suitList = map (\(Card _ suit) -> suit) cardList
+    rankList = map rank cardList
+    suitList = map suit cardList
     isStraight = and $ zipWith (\a b -> b == succ a) rankList (drop 1 rankList)
     isFlush = and $ map (== head suitList) (tail suitList)
