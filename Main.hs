@@ -24,10 +24,14 @@ data HandType = HighCard
               | Pair
               | TwoPair
               | Trips
+              --a wheel straight is a 5 high straight
+              | WheelStraight
               | Straight
               | Flush
               | FullHouse
               | Quads
+              --a wheel straight flush is a 5 high straight flush
+              | WheelStraightFlush
               | StraightFlush
               deriving (Eq, Ord, Enum, Show)
 
@@ -40,10 +44,13 @@ instance Ord Card where
 
 data Hand = Hand Card Card Card Card Card deriving (Eq, Show)
 
+sortedCards :: Hand -> [Card]
+sortedCards (Hand a1 a2 a3 a4 a5) = sort $ [a1, a2, a3, a4, a5]
+
 instance Ord Hand where
-  a@(Hand a1 a2 a3 a4 a5) `compare` b@(Hand b1 b2 b3 b4 b5)
-    | handTypeA /= handTypeB = handTypeA `compare` handTypeB
-    | otherwise              = sortedHandlistA `compare` sortedHandlistB
+  a `compare` b
+    | handTypeA /= handTypeB        = handTypeA `compare` handTypeB
+    | otherwise                     = sortedHandlistA `compare` sortedHandlistB
     where
       handTypeA = case extractFiveCardHandType a of
         (Just fiveCardHandTypeA) -> max fiveCardHandTypeA (extractFreqHandType a)
@@ -51,11 +58,11 @@ instance Ord Hand where
       handTypeB = case extractFiveCardHandType b of
         (Just fiveCardHandTypeB) -> max fiveCardHandTypeB (extractFreqHandType b)
         _                        -> extractFreqHandType b
-      sortedHandlistA = sort [a1, a2, a3, a4, a5]
-      sortedHandlistB = sort [b1, b2, b3, b4, b5]
+      sortedHandlistA = sortedCards a
+      sortedHandlistB = sortedCards b
 
 extractFreqHandType :: Hand -> HandType
-extractFreqHandType (Hand c1 c2 c3 c4 c5) = case rankFreqs of
+extractFreqHandType h = case rankFreqs of
   [4, 1]       -> Quads
   [3, 2]       -> FullHouse
   [3, 1, 1]    -> Trips
@@ -64,17 +71,19 @@ extractFreqHandType (Hand c1 c2 c3 c4 c5) = case rankFreqs of
   _            -> HighCard
   where
     ranksEqual card1 card2 = (rank card1) == (rank card2)
-    rankFreqs = map length . groupBy ranksEqual . sort $ [c1, c2, c3, c4, c5]
+    rankFreqs = map length . groupBy ranksEqual . sortedCards $ h
 
 extractFiveCardHandType :: Hand -> Maybe HandType
-extractFiveCardHandType (Hand c1 c2 c3 c4 c5) = case (isStraight, isFlush) of
-  (True, True)   -> Just StraightFlush
-  (False, True)  -> Just Flush
-  (True, False)  -> Just Straight
-  (False, False) -> Nothing
+extractFiveCardHandType h = case (isStraight, isWheelStraight, isFlush) of
+  (True,  False, True)  -> Just StraightFlush
+  (False, True,  True)  -> Just WheelStraightFlush
+  (False, False, True)  -> Just Flush
+  (True,  False, False) -> Just Straight
+  (False, True,  False) -> Just WheelStraight
+  (False, False, False) -> Nothing
   where
-    cardList = [c1, c2, c3, c4, c5]
-    rankList = map rank cardList
-    suitList = map suit cardList
-    isStraight = and $ zipWith (\a b -> b == succ a) rankList (drop 1 rankList)
-    isFlush = and $ map (== head suitList) (tail suitList)
+    ranks = map rank $ sortedCards h
+    suits = map suit $ sortedCards h
+    isStraight = and $ zipWith (\a b -> b == succ a) ranks (drop 1 ranks)
+    isWheelStraight = ranks == [Two, Three, Four, Five, Ace]
+    isFlush = and $ map (== head suits) (tail suits)
