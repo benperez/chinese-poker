@@ -1,4 +1,4 @@
-import Data.List (groupBy, sort)
+import Data.List (group, sort)
 
 data Suit = Diamonds
           | Clubs
@@ -49,41 +49,30 @@ sortedCards (Hand a1 a2 a3 a4 a5) = sort $ [a1, a2, a3, a4, a5]
 
 instance Ord Hand where
   a `compare` b
-    | handTypeA /= handTypeB        = handTypeA `compare` handTypeB
-    | otherwise                     = sortedHandlistA `compare` sortedHandlistB
+    | handTypeA /= handTypeB = handTypeA `compare` handTypeB
+    | otherwise              = (sortedCards a) `compare` (sortedCards b)
     where
-      handTypeA = case extractFiveCardHandType a of
-        (Just fiveCardHandTypeA) -> max fiveCardHandTypeA (extractFreqHandType a)
-        _                        -> extractFreqHandType a
-      handTypeB = case extractFiveCardHandType b of
-        (Just fiveCardHandTypeB) -> max fiveCardHandTypeB (extractFreqHandType b)
-        _                        -> extractFreqHandType b
-      sortedHandlistA = sortedCards a
-      sortedHandlistB = sortedCards b
+      handTypeA = extractHandType a
+      handTypeB = extractHandType b
 
-extractFreqHandType :: Hand -> HandType
-extractFreqHandType h = case rankFreqs of
-  [4, 1]       -> Quads
-  [3, 2]       -> FullHouse
-  [3, 1, 1]    -> Trips
-  [2, 2, 1]    -> TwoPair
-  [2, 1, 1, 1] -> Pair
-  _            -> HighCard
-  where
-    ranksEqual card1 card2 = (rank card1) == (rank card2)
-    rankFreqs = map length . groupBy ranksEqual . sortedCards $ h
-
-extractFiveCardHandType :: Hand -> Maybe HandType
-extractFiveCardHandType h = case (isStraight, isWheelStraight, isFlush) of
-  (True,  False, True)  -> Just StraightFlush
-  (False, True,  True)  -> Just WheelStraightFlush
-  (False, False, True)  -> Just Flush
-  (True,  False, False) -> Just Straight
-  (False, True,  False) -> Just WheelStraight
-  (False, False, False) -> Nothing
+extractHandType :: Hand -> HandType
+extractHandType h = case rankFrequencies of
+  [4, 1]          -> Quads
+  [3, 2]          -> FullHouse
+  [3, 1, 1]       -> Trips
+  [2, 2, 1]       -> TwoPair
+  [2, 1, 1, 1]    -> Pair
+  [1, 1, 1, 1, 1] -> case (isStraight, isWheelStraight, isFlush) of
+    (True,  False, True)  -> StraightFlush
+    (False, True,  True)  -> WheelStraightFlush
+    (False, False, True)  -> Flush
+    (True,  False, False) -> Straight
+    (False, True,  False) -> WheelStraight
+    (False, False, False) -> HighCard
   where
     ranks = map rank $ sortedCards h
-    suits = map suit $ sortedCards h
+    rankFrequencies = map length $ group ranks
     isStraight = and $ zipWith (\a b -> b == succ a) ranks (drop 1 ranks)
     isWheelStraight = ranks == [Two, Three, Four, Five, Ace]
+    suits = map suit $ sortedCards h
     isFlush = and $ map (== head suits) (tail suits)
