@@ -1,0 +1,23 @@
+name:                chinese-poker
+version:             0.0.1.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/benperez/chinese-poker
+-- license:
+-- license-file:
+author:              Benjamin Perez
+maintainer:          ben.prez@gmail.com
+-- copyright:
+category:            Data
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable plaid-parse
+  main-is:             Main.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:
+    base
+  hs-source-dirs:      src
+  default-language:    Haskell2010

@@ -1,3 +1,5 @@
+module Hand (Suit(..), Rank(..), Card(..), Hand(Hand)) where
+
 import Data.List (group, sort)
 
 data Suit = Diamonds
