@@ -10,8 +10,8 @@ main = do
                          Card {rank = Five,  suit = Spades}
                          Card {rank = Six,   suit = Spades}
                          Card {rank = Seven, suit = Spades}
-    quads = Hand Card {rank = Three, suit = Spades}
-                 Card {rank = Three, suit = Hearts}
-                 Card {rank = Three, suit = Diamonds}
-                 Card {rank = Three, suit = Clubs}
-                 Card {rank = Seven, suit = Spades}
+    quads = Hand Card {rank = Eight, suit = Spades}
+                 Card {rank = Eight, suit = Hearts}
+                 Card {rank = Eight, suit = Diamonds}
+                 Card {rank = Eight, suit = Clubs}
+                 Card {rank = Seven, suit = Clubs}
