@@ -1,7 +1,12 @@
 .PHONY: setup
 setup:
 	cabal sandbox init
-	cabal install --jobs
+	cabal install --only-dependencies --enable-tests
+
+
+.PHONY: test
+test:
+	cabal exec -- runhaskell -isrc -itest test/Spec.hs
 
 
 .PHONY: repl

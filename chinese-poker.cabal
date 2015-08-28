@@ -8,16 +8,28 @@ homepage:            https://github.com/benperez/chinese-poker
 author:              Benjamin Perez
 maintainer:          ben.prez@gmail.com
 -- copyright:
-category:            Data
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
-executable chinese-poker
-  main-is:             Main.hs
-  -- other-modules:
-  -- other-extensions:
+library
+  hs-source-dirs:
+      src
+  exposed-modules:
+      Hand
   build-depends:
-    base
-  hs-source-dirs:      src
-  default-language:    Haskell2010
+      base
+  default-language:
+      Haskell2010
+
+test-suite spec
+  type:
+      exitcode-stdio-1.0
+  hs-source-dirs:
+      test
+  main-is:
+      Spec.hs
+  build-depends:
+      base
+    , chinese-poker
+    , hspec >= 2.2
