@@ -2,6 +2,7 @@ module Hand (Suit(..), Rank(..), Card(..), Hand(Hand)) where
 
 import Data.List (group, sort)
 
+
 data Suit = Diamonds
           | Clubs
           | Hearts
@@ -59,11 +60,11 @@ instance Ord Hand where
 
 extractHandType :: Hand -> HandType
 extractHandType h = case rankFrequencies of
-  [4, 1]          -> Quads
-  [3, 2]          -> FullHouse
-  [3, 1, 1]       -> Trips
-  [2, 2, 1]       -> TwoPair
-  [2, 1, 1, 1]    -> Pair
+  [1, 4]          -> Quads
+  [2, 3]          -> FullHouse
+  [1, 1, 3]       -> Trips
+  [1, 2, 2]       -> TwoPair
+  [1, 1, 1, 2]    -> Pair
   [1, 1, 1, 1, 1] -> case (isStraight, isWheelStraight, isFlush) of
     (True,  False, True)  -> StraightFlush
     (False, True,  True)  -> WheelStraightFlush
@@ -73,7 +74,7 @@ extractHandType h = case rankFrequencies of
     (False, False, False) -> HighCard
   where
     ranks = map rank $ sortedCards h
-    rankFrequencies = map length $ group ranks
+    rankFrequencies = sort $ map length $ group ranks
     isStraight = and $ zipWith (\a b -> b == succ a) ranks (drop 1 ranks)
     isWheelStraight = ranks == [Two, Three, Four, Five, Ace]
     suits = map suit $ sortedCards h
