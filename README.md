@@ -7,22 +7,30 @@ The goal of this project is to create a set of datatypes and functions that repr
 ## Organization
 The core logic of traditional poker hands is located in `src/Hand.hs`. This module exports four types—`Suit`, `Rank`, `Card`, and `Hand` defined as follows:
 ```haskell
-data Suit = Diamonds | Clubs | Hearts | Spades deriving (Eq, Show)
+data Suit = Diamonds | Clubs | Hearts | Spades deriving (Eq, Enum, Ord, Show)
 
 data Rank = Two
           | Three
           -- etc...
           | King
           | Ace
-          deriving (Eq, Ord, Enum, Show)
+          deriving (Eq, Enum, Ord, Show)
 
-data Card = Card {rank :: Rank, suit :: Suit} deriving (Eq, Show)
+type Card = (Rank, Suit)
 
 data Hand = Hand Card Card Card Card Card deriving (Eq, Show)
 ```
-`Card` and `Hand` are both instances of `Ord`. The implementation of `Ord` that `Hand` provides compares seperate `Hand`s according to the traditional rules of poker
+Hand is an instance of `Ord` whose implementation compares seperate `Hand`s according to the traditional rules of poker.
+
+Hand also exposes a function called validateHands that will check to ensure that no cards are repeated in a given set of hands.
+```haskell
+validateHands :: [Hand] -> Bool
+```
 
 ## Setup
-To build the project, run `make setup` in the top-level directory. This will output an executable file named `chinese-poker` (built from `src/Main.hs`) into the `.cabal-sandbox/bin/` directory.
+To build the project, run `make setup` in the top-level directory.
+
+## Tests
+The tests are written using [Hspec](http://hspec.github.io/). To run the tests type `make test`.
 
 
