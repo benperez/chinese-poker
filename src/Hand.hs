@@ -1,12 +1,13 @@
-module Hand (Suit(..), Rank(..), Card(..), Hand(Hand)) where
+module Hand (Suit(..), Rank(..), Card(..), Hand(Hand), validateHands) where
 
 import Data.List (group, sort)
+import Data.List.Unique (repeated)
 
 
 data Suit = Diamonds
           | Clubs
           | Hearts
-          | Spades deriving (Eq, Show)
+          | Spades deriving (Eq, Enum, Ord, Show)
 
 data Rank = Two
           | Three
@@ -21,7 +22,7 @@ data Rank = Two
           | Queen
           | King
           | Ace
-          deriving (Eq, Ord, Enum, Show)
+          deriving (Eq, Enum, Ord, Show)
 
 data HandType = HighCard
               | Pair
@@ -36,30 +37,34 @@ data HandType = HighCard
               --a wheel straight flush is a 5 high straight flush
               | WheelStraightFlush
               | StraightFlush
-              deriving (Eq, Ord, Enum, Show)
+              deriving (Eq, Enum, Ord, Show)
 
-data Card = Card { rank :: Rank
-                 , suit :: Suit
-                 } deriving (Eq, Show)
-
-instance Ord Card where
-  card1 `compare` card2 = (rank card1) `compare` (rank card2)
+type Card = (Rank, Suit)
 
 data Hand = Hand Card Card Card Card Card deriving (Eq, Show)
 
-sortedCards :: Hand -> [Card]
-sortedCards (Hand a1 a2 a3 a4 a5) = sort $ [a1, a2, a3, a4, a5]
+getCards :: Hand -> [Card]
+getCards (Hand a1 a2 a3 a4 a5) = [a1, a2, a3, a4, a5]
+
+getSuits :: Hand -> [Suit]
+getSuits = map snd . getCards
+
+getSortedRanks :: Hand -> [Rank]
+getSortedRanks = sort . map fst . getCards
+
+validateHands :: [Hand] -> Bool
+validateHands = (== 0) . length . repeated . concatMap getCards
 
 instance Ord Hand where
   a `compare` b
     | handTypeA /= handTypeB = handTypeA `compare` handTypeB
-    | otherwise              = (sortedCards a) `compare` (sortedCards b)
+    | otherwise              = (getSortedRanks a) `compare` (getSortedRanks b)
     where
       handTypeA = extractHandType a
       handTypeB = extractHandType b
 
 extractHandType :: Hand -> HandType
-extractHandType h = case rankFrequencies of
+extractHandType h = case increasingRankFrequencies of
   [1, 4]          -> Quads
   [2, 3]          -> FullHouse
   [1, 1, 3]       -> Trips
@@ -73,9 +78,8 @@ extractHandType h = case rankFrequencies of
     (False, True,  False) -> WheelStraight
     (False, False, False) -> HighCard
   where
-    ranks = map rank $ sortedCards h
-    rankFrequencies = sort $ map length $ group ranks
+    ranks = getSortedRanks h
+    increasingRankFrequencies = sort $ map length $ group ranks
     isStraight = and $ zipWith (\a b -> b == succ a) ranks (drop 1 ranks)
     isWheelStraight = ranks == [Two, Three, Four, Five, Ace]
-    suits = map suit $ sortedCards h
-    isFlush = and $ map (== head suits) (tail suits)
+    isFlush = and $ map (== head (getSuits h)) (tail (getSuits h))

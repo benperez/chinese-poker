@@ -4,53 +4,53 @@ import Data.List (sort)
 
 import Test.Hspec
 
-import Hand (Suit(..), Rank(..), Card(..), Hand(Hand))
+import Hand (Suit(..), Rank(..), Card(..), Hand(Hand), validateHands)
 
-highCard      = Hand Card {rank = Ace,   suit = Diamonds}
-                     Card {rank = Seven, suit = Hearts}
-                     Card {rank = Five,  suit = Clubs}
-                     Card {rank = Three, suit = Diamonds}
-                     Card {rank = Two,   suit = Spades}
-pair          = Hand Card {rank = Ace,   suit = Clubs}
-                     Card {rank = Ace,   suit = Diamonds}
-                     Card {rank = Nine,  suit = Hearts}
-                     Card {rank = Six,   suit = Spades}
-                     Card {rank = Four,  suit = Diamonds}
-twoPair       = Hand Card {rank = King,  suit = Hearts}
-                     Card {rank = King,  suit = Spades}
-                     Card {rank = Jack,  suit = Clubs}
-                     Card {rank = Jack,  suit = Diamonds}
-                     Card {rank = Nine,  suit = Diamonds}
-trips         = Hand Card {rank = Queen, suit = Spades}
-                     Card {rank = Queen, suit = Hearts}
-                     Card {rank = Queen, suit = Diamonds}
-                     Card {rank = Five,  suit = Spades}
-                     Card {rank = Nine,  suit = Clubs}
-straight      = Hand Card {rank = Queen, suit = Spades}
-                     Card {rank = Jack,  suit = Diamonds}
-                     Card {rank = Ten,   suit = Clubs}
-                     Card {rank = Nine,  suit = Spades}
-                     Card {rank = Eight, suit = Hearts}
-flush         = Hand Card {rank = King,  suit = Spades}
-                     Card {rank = Jack,  suit = Spades}
-                     Card {rank = Nine,  suit = Spades}
-                     Card {rank = Seven, suit = Spades}
-                     Card {rank = Three, suit = Spades}
-fullHouse     = Hand Card {rank = King,  suit = Hearts}
-                     Card {rank = King,  suit = Diamonds}
-                     Card {rank = King,  suit = Spades}
-                     Card {rank = Five,  suit = Hearts}
-                     Card {rank = Five,  suit = Clubs}
-fourOfAKind   = Hand Card {rank = Five,  suit = Diamonds}
-                     Card {rank = Five,  suit = Spades}
-                     Card {rank = Five,  suit = Hearts}
-                     Card {rank = Five,  suit = Clubs}
-                     Card {rank = Three, suit = Hearts}
-straightFlush = Hand Card {rank = Eight, suit = Clubs}
-                     Card {rank = Seven, suit = Clubs}
-                     Card {rank = Six,   suit = Clubs}
-                     Card {rank = Five,  suit = Clubs}
-                     Card {rank = Four,  suit = Clubs}
+highCard      = Hand (Ace,   Diamonds)
+                     (Seven, Hearts)
+                     (Five,  Clubs)
+                     (Three, Diamonds)
+                     (Two,   Spades)
+pair          = Hand (Ace,   Clubs)
+                     (Ace,   Diamonds)
+                     (Nine,  Hearts)
+                     (Six,   Spades)
+                     (Four,  Diamonds)
+twoPair       = Hand (King,  Hearts)
+                     (King,  Spades)
+                     (Jack,  Clubs)
+                     (Jack,  Diamonds)
+                     (Nine,  Diamonds)
+trips         = Hand (Queen, Spades)
+                     (Queen, Hearts)
+                     (Queen, Diamonds)
+                     (Five,  Spades)
+                     (Nine,  Clubs)
+straight      = Hand (Queen, Spades)
+                     (Jack,  Diamonds)
+                     (Ten,   Clubs)
+                     (Nine,  Spades)
+                     (Eight, Hearts)
+flush         = Hand (King,  Spades)
+                     (Jack,  Spades)
+                     (Nine,  Spades)
+                     (Seven, Spades)
+                     (Three, Spades)
+fullHouse     = Hand (King,  Hearts)
+                     (King,  Diamonds)
+                     (King,  Spades)
+                     (Five,  Hearts)
+                     (Five,  Clubs)
+fourOfAKind   = Hand (Five,  Diamonds)
+                     (Five,  Spades)
+                     (Five,  Hearts)
+                     (Five,  Clubs)
+                     (Three, Hearts)
+straightFlush = Hand (Eight, Clubs)
+                     (Seven, Clubs)
+                     (Six,   Clubs)
+                     (Five,  Clubs)
+                     (Four,  Clubs)
 unsortedHandArray = [ trips
                     , fullHouse
                     , highCard
@@ -61,10 +61,15 @@ unsortedHandArray = [ trips
                     , straight
                     , flush
                     ]
+invalidHand   = Hand (Eight, Clubs)
+                     (Eight, Clubs)
+                     (Three, Hearts)
+                     (Five,  Spades)
+                     (Four,  Diamonds)
 
 spec :: Spec
 spec = do
-  describe "absolute" $ do
+  describe "hand implementation of Ord" $ do
     it "correctly sorts a deck of hands" $
       sort unsortedHandArray `shouldBe` [ highCard
                                         , pair
@@ -76,6 +81,18 @@ spec = do
                                         , fourOfAKind
                                         , straightFlush
                                         ]
+  describe "hand validation" $ do
+    it "correctly identifies a valid hand" $
+      validateHands [flush] `shouldBe` True
+
+    it "correctly identifies an invalid hand" $
+      validateHands [invalidHand] `shouldBe` False
+
+    it "correctly identifies two valid hands" $
+      validateHands [highCard, twoPair] `shouldBe` True
+
+    it "correctly identifies two invalid hands" $
+      validateHands [highCard, pair] `shouldBe` False
 
 main :: IO ()
 main = hspec spec
