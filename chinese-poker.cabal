@@ -34,3 +34,15 @@ test-suite spec
       base
     , chinese-poker
     , hspec >= 2.2
+
+executable poker-server
+  hs-source-dirs:
+      poker-server
+  main-is:
+      Server.hs
+  build-depends:
+      base
+    , bytestring
+    , chinese-poker
+    , network
+    , unix

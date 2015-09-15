@@ -2,6 +2,7 @@
 setup:
 	cabal sandbox init
 	cabal install --only-dependencies --enable-tests
+	cabal build
 
 
 .PHONY: test
