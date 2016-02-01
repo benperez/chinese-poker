@@ -1,6 +1,6 @@
 module Hand (Suit(..), Rank(..), Card(..), Hand(Hand), validateHands) where
 
-import Data.List (group, groupBy, sort, sortOn)
+import Data.List (group, sort, sortOn)
 
 
 data Suit = Diamonds | Clubs | Hearts | Spades
