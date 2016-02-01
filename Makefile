@@ -11,7 +11,7 @@ test:
 
 .PHONY: lint
 lint:
-	hlint src/
+	.cabal-sandbox/bin/hlint src/
 
 
 .PHONY: repl
