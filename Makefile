@@ -9,6 +9,11 @@ test:
 	cabal exec -- runhaskell -isrc -itest test/Spec.hs
 
 
+.PHONY: lint
+lint:
+	hlint src/
+
+
 .PHONY: repl
 repl:
 	ghci -no-user-package-db -package-db .cabal-sandbox/*-packages.conf.d

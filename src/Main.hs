@@ -2,8 +2,7 @@ import Hand (Suit(..), Rank(..), Card(..), Hand(Hand))
 
 -- | 'main' runs the main program
 main :: IO ()
-main = do
-  putStrLn $ show $ straightFlush `compare` quads
+main = print $ straightFlush `compare` quads
   where
     straightFlush = Hand Card {rank = Three, suit = Spades}
                          Card {rank = Four,  suit = Spades}

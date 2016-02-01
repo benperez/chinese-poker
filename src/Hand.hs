@@ -37,7 +37,7 @@ repeated :: Ord a => [a] -> [a]
 repeated = map head . filter ((>1) . length) . group . sort
 
 validateHands :: [Hand] -> Bool
-validateHands = (== 0) . length . repeated . concatMap getCards
+validateHands = null . repeated . concatMap getCards
 
 isStraight :: [Rank] -> Bool
 isStraight ranks = and $ zipWith (\a b -> b == succ a) ranks (drop 1 ranks)
@@ -46,7 +46,7 @@ isWheelStraight :: [Rank] -> Bool
 isWheelStraight = (== [Two, Three, Four, Five, Ace])
 
 isFlush :: [Suit] -> Bool
-isFlush suits = and $ map (== head (suits)) (tail (suits))
+isFlush suits = all (== head suits) (tail suits)
 
 extractHandType :: Hand -> (HandType, (Rank, Rank, Rank, Rank, Rank))
 extractHandType h = case increasingRankFrequencies of
@@ -66,7 +66,7 @@ extractHandType h = case increasingRankFrequencies of
     sortedCards = getCardsSortedByRank h
     rs = map fst sortedCards
     ss = map snd sortedCards
-    ranksEqual a b = (fst a) == (fst b)
+    ranksEqual a b = fst a == fst b
     increasingRankFrequencies = sortOn fst .
                                 map (\g -> (length g, g)) .
                                 group $ rs
