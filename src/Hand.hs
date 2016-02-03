@@ -1,4 +1,11 @@
-module Hand (Suit(..), Rank(..), Card(..), Hand(Hand), validateHands) where
+module Hand (Suit(..)
+            , Rank(..)
+            , Card(..)
+            , Hand(Hand)
+            , HandType(..)
+            , validateHands
+            , extractHandType
+            ) where
 
 import Data.List (group, sort, sortOn)
 
