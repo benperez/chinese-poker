@@ -4,10 +4,10 @@ import Data.List (group, sort, sortOn)
 
 
 data Suit = Diamonds | Clubs | Hearts | Spades
-  deriving (Eq, Enum, Ord, Show)
+  deriving (Bounded, Eq, Enum, Ord, Show)
 
 data Rank = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
-  deriving (Eq, Enum, Ord, Show)
+  deriving (Bounded, Eq, Enum, Ord, Show)
 
 type Card = (Rank, Suit)
 
