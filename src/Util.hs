@@ -3,6 +3,7 @@ module Util (combinations
             , allPossibleHands
             ) where
 
+import Control.Arrow ((&&&))
 import Control.Monad (filterM)
 import Data.List (sort, group)
 
@@ -22,7 +23,7 @@ allPossibleHands :: [Hand]
 allPossibleHands = map (\[a, b, c, d, e] -> Hand a b c d e) $ combinations 5 deck
 
 handfrequencies :: [(HandType, Int)]
-handfrequencies = map (\hts -> (head hts, length hts)) .
+handfrequencies = map (head &&& length) .
                   group .
                   sort .
                   map (fst . extractHandType) $ allPossibleHands
