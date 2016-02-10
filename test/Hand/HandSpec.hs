@@ -70,7 +70,7 @@ invalidHand   = Hand (Eight, Clubs)
 spec :: Spec
 spec = do
   describe "hand implementation of Ord" $ do
-    it "sorts a deck of hands" $
+    it "sorts a deck of hands of different types" $
       sort unsortedHandArray `shouldBe` [ highCard
                                         , pair
                                         , twoPair
@@ -81,19 +81,21 @@ spec = do
                                         , fourOfAKind
                                         , straightFlush
                                         ]
-    it "breaks ties when the hands have the same type" $
-      let hc1    = Hand (Ace, Diamonds) (Seven, Hearts) (Five, Clubs) (Three, Diamonds) (Two, Spades)
-          hc2    = Hand (King, Diamonds) (Seven, Hearts) (Five, Clubs) (Three, Diamonds) (Two, Spades)
-          two1   = Hand (King, Hearts) (King, Spades) (Jack, Clubs) (Jack, Diamonds) (Nine, Diamonds)
-          two2   = Hand (King, Hearts) (King, Spades) (Ten, Clubs) (Ten, Diamonds) (Nine, Diamonds)
-          f1     = Hand (King, Spades) (Jack, Spades) (Nine, Spades) (Seven, Spades) (Three, Spades)
-          f2     = Hand (King, Hearts) (Jack, Hearts) (Nine, Hearts) (Seven, Hearts) (Three, Hearts)
-      in group (sort [hc1, hc2, two1, two2, f1, f2]) `shouldBe` [ [hc2]
-                                                                , [hc1]
-                                                                , [two2]
-                                                                , [two1]
-                                                                , [f1, f2]
-                                                                ]
+
+    describe "breaking ties" $ do
+      it "breaks ties when the hands have the same type" $
+        let hc1    = Hand (Ace, Diamonds) (Seven, Hearts) (Five, Clubs) (Three, Diamonds) (Two, Spades)
+            hc2    = Hand (King, Diamonds) (Seven, Hearts) (Five, Clubs) (Three, Diamonds) (Two, Spades)
+            two1   = Hand (King, Hearts) (King, Spades) (Jack, Clubs) (Jack, Diamonds) (Nine, Diamonds)
+            two2   = Hand (King, Hearts) (King, Spades) (Ten, Clubs) (Ten, Diamonds) (Nine, Diamonds)
+            f1     = Hand (King, Spades) (Jack, Spades) (Nine, Spades) (Seven, Spades) (Three, Spades)
+            f2     = Hand (King, Hearts) (Jack, Hearts) (Nine, Hearts) (Seven, Hearts) (Three, Hearts)
+        in group (sort [hc1, hc2, two1, two2, f1, f2]) `shouldBe` [ [hc2]
+                                                                  , [hc1]
+                                                                  , [two2]
+                                                                  , [two1]
+                                                                  , [f1, f2]
+                                                                  ]
   describe "hand validation" $ do
     it "validates a correct hand" $
       validateHands [flush] `shouldBe` True
