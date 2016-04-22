@@ -28,9 +28,9 @@ validateHands :: [Hand] -> Bool
 ```
 
 ## Setup
-To build the project, run `make setup` in the top-level directory.
+To build the project, just run `make setup` in the top-level directory.
 
 ## Tests
-The tests are written using [Hspec](http://hspec.github.io/). To run the tests type `make test`.
+The tests are written using [Hspec](http://hspec.github.io/). To run the tests, simply type `make test`.
 
 
